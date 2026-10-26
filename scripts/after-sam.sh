@@ -3,7 +3,7 @@
 # connection to the old one: web and video apps stop opening, the remote stops controlling HDMI-CEC devices and apps are no longer
 # preloaded (issues 23 and 24). Restart those of them this TV has; which ones is decided by helper/tvprofile.js (afterSam).
 # Each step is written to /tmp/cleanyourtv-boot.log, which Share log includes.
-export PATH=/usr/bin:/usr/sbin:/bin:/sbin:$PATH
+export PATH=/media/developer/cytv-compat/bin:/usr/bin:/usr/sbin:/bin:/sbin:$PATH   # webOS 4: Node 8 and the systemctl shim first (webos4/README.md)
 L=/media/developer/cleanyourtv
 LOG=/tmp/cleanyourtv-boot.log
 up() { cut -d' ' -f1 /proc/uptime; }

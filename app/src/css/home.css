@@ -275,6 +275,25 @@ body {
   grid-template-columns: repeat(var(--cols), 1fr);
   gap: var(--gap-y) var(--gap-x);
 }
+/* Chromium 53 (webOS 4) has no CSS grid and no gap in flexbox: the same rows with flexbox and margins */
+@supports not (display: grid) {
+  #grid {
+    display: flex;
+    flex-wrap: wrap;
+    width: calc(var(--grid-w) + var(--gap-x) + 2px);
+  }
+  #grid .tile {
+    width: calc((var(--grid-w) - (var(--cols) - 1) * var(--gap-x)) / var(--cols));
+    margin: 0 var(--gap-x) var(--gap-y) 0;
+  }
+  [data-galign="center"] #grid {
+    width: var(--grid-w);
+  }
+  [data-galign="center"] #grid .tile {
+    width: var(--tile-w);
+    margin: 0 calc(var(--gap-x) / 2) var(--gap-y);
+  }
+}
 /* an overlay grid: hidden until the focus moves down into it, then dark layer + grid over the screen above the dock */
 [data-grid="overlay"] #grid {
   z-index: 3;

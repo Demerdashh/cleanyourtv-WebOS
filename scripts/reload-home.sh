@@ -2,7 +2,7 @@
 # Reload the page of Home. Where the Home renderer can be found (webOS 7 and newer) it is killed and Home is launched
 # again. On webOS 6 (Node 8) WebAppMgr keeps the replaced page alive and a relaunch only brings the old page back, so
 # there webapp-mgr is restarted. Other versions are never restarted this way.
-export PATH=/usr/bin:/usr/sbin:/bin:/sbin:$PATH
+export PATH=/media/developer/cytv-compat/bin:/usr/bin:/usr/sbin:/bin:/sbin:$PATH   # webOS 4: Node 8 and the systemctl shim first (webos4/README.md)
 # The stand-in way (LG's native Home, scripts/home-standin.sh): webapp-mgr holds the launcher; close it there, and launching Home
 # makes the stand-in open it again.
 STANDIN=/tmp/cleanyourtv-home-standin

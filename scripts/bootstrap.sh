@@ -6,7 +6,7 @@
 # Idempotent: running it again repairs a broken install. What differs between TVs (the notification window type, whether the
 # firmware is in the compatibility list, whether LG's Home is a kind we support) is decided by helper/tvprofile.js, the same rules the
 # service follows. The steps are the functions below; the order is at the end of the file.
-export PATH=/usr/bin:/usr/sbin:/bin:/sbin:$PATH
+export PATH=/media/developer/cytv-compat/bin:/usr/bin:/usr/sbin:/bin:/sbin:$PATH   # webOS 4: Node 8 and the systemctl shim first (webos4/README.md)
 S=$(cd "$(dirname "$0")" && pwd)
 R=${CYTV_TEST_ROOT:-}                 # a folder that stands in for / (tools/test/scripts.test.js only; empty on a TV)
 MD=$R/media/developer

@@ -3,7 +3,7 @@
 # Restores LG's Home and services, gives the Input key back to LG, removes the apps, the boot scripts and
 # /media/developer/cleanyourtv. (The inputhook stays loaded in LG's input process until the next reboot; without
 # a bind it does nothing.) Pass --keep-config to keep your settings (config.json) and usage history.
-export PATH=/usr/bin:/usr/sbin:/bin:/sbin:$PATH
+export PATH=/media/developer/cytv-compat/bin:/usr/bin:/usr/sbin:/bin:/sbin:$PATH   # webOS 4: Node 8 and the systemctl shim first (webos4/README.md)
 D=/media/developer/cleanyourtv
 INITD=/var/lib/webosbrew/init.d
 [ "$(id -u)" = 0 ] || { echo "run as root"; exit 1; }

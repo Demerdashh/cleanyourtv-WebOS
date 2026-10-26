@@ -5,7 +5,7 @@
 # com.webos.app.home and stays running. It also tries to register with SAM as Home: then the Home key sends it a "relaunch" and the
 # launcher is shown again; without registration SAM restarts this script on the Home key, which shows the launcher the same way.
 # Every step is written to /tmp/cleanyourtv-boot.log, which Share log includes.
-export PATH=/usr/bin:/usr/sbin:/bin:/sbin:$PATH
+export PATH=/media/developer/cytv-compat/bin:/usr/bin:/usr/sbin:/bin:/sbin:$PATH   # webOS 4: Node 8 and the systemctl shim first (webos4/README.md)
 L=/media/developer/cleanyourtv
 LOG=/tmp/cleanyourtv-boot.log
 up() { cut -d' ' -f1 /proc/uptime; }

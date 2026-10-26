@@ -1,7 +1,7 @@
 #!/bin/sh
 # Undo debloat-stop.sh: restart the systemd daemons, remove the stubs and the hosts lines (dynamic services start on demand again).
 # sh debloat-undo.sh [group...]: only those groups (ads, tracking, logs, suggestions, see debloat-stop.sh); without arguments all.
-export PATH=/usr/bin:/usr/sbin:/bin:/sbin:$PATH
+export PATH=/media/developer/cytv-compat/bin:/usr/bin:/usr/sbin:/bin:/sbin:$PATH   # webOS 4: Node 8 and the systemctl shim first (webos4/README.md)
 G=" ${*:-ads tracking logs suggestions} "
 on() { case "$G" in *" $1 "*) return 0 ;; esac; return 1; }
 units=""; bins=""

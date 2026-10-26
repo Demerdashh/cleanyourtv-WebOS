@@ -3,6 +3,7 @@
   "updated": "2026-10-26",
   "comment": "Firmware versions (Settings > About: software version, or the webOS SDK version) the setup is known to work on. A firmware listed here is set up without --force. A trailing * matches a prefix. Add an entry through an issue or pull request, with the output of 'Share log'.",
   "entries": [
+    { "firmware": "05.40.97", "sdk": "4.10.0", "homeType": "native", "status": "reported", "note": "55UM7095PVC, webOS 4.5 with the webOS 4 compatibility layer of this fork (webos4/README.md)" },
     { "firmware": "33.23.05", "sdk": "10.2.2", "homeType": "flutter", "status": "tested", "note": "OLED65G26LA, webOS 25 (tested)" },
     { "firmware": "23.25.55", "homeType": "", "status": "reported", "note": "reported working on two models" },
     { "firmware": "04.64.00", "sdk": "5.6.2", "homeType": "native", "status": "reported", "note": "75UN85006LA, 55UN7200PTF, OLED CX and OLED65CX6LA, webOS 5.6.2 (issues 4, 15, 23 and 24)" },

@@ -33,6 +33,7 @@ module.exports = {
   HOME_APP: '/usr/palm/applications/com.webos.app.home',
   FULLHOME_APP: '/usr/palm/applications/com.webos.app.fullhome',
   STANDIN: env.CYTV_STANDIN || '/tmp/cleanyourtv-home-standin', // LG's Home program while scripts/home-standin.sh is mounted over it
-  // child processes find the system tools first, as in a login shell on the TV
-  ENV: Object.assign({}, env, { PATH: '/usr/bin:/usr/sbin:/bin:/sbin:' + (env.PATH || '') }),
+  // child processes find the system tools first, as in a login shell on the TV; on webOS 4 the compatibility folder (Node 8 and
+  // the systemctl shim, webos4/README.md) comes before them. It does not exist on other TVs, so it changes nothing there.
+  ENV: Object.assign({}, env, { PATH: '/media/developer/cytv-compat/bin:/usr/bin:/usr/sbin:/bin:/sbin:' + (env.PATH || '') }),
 };

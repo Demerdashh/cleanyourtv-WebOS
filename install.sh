@@ -12,7 +12,7 @@
 main() {
   REPO="${CYTV_REPO:-lasharor/cleanyourtv-WebOS}"
   ID=com.cleanyourtv.manager
-  export PATH=/usr/bin:/usr/sbin:/bin:/sbin:$PATH
+  export PATH=/media/developer/cytv-compat/bin:/usr/bin:/usr/sbin:/bin:/sbin:$PATH   # webOS 4: Node 8 and the systemctl shim first (webos4/README.md)
   say() { echo "[cleanyourtv] $*"; }
   die() { echo "[cleanyourtv] ERROR: $*" >&2; exit 1; }
   case "$1" in -h|--help) sed -n '2,8p' "$0" 2>/dev/null | sed 's/^# \{0,1\}//'; return 0 ;; "") ;; *) die "unknown option: $1" ;; esac

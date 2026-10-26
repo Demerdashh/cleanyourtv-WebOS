@@ -14,7 +14,7 @@ mask() {
 
 ssh -o BatchMode=yes -o ConnectTimeout=8 "root@$IP" 'sh -s' <<'REMOTE' | mask
 D=/media/developer/cleanyourtv
-export PATH=/usr/bin:/usr/sbin:/bin:/sbin:$PATH
+export PATH=/media/developer/cytv-compat/bin:/usr/bin:/usr/sbin:/bin:/sbin:$PATH   # webOS 4: Node 8 and the systemctl shim first (webos4/README.md)
 echo "===== diagnose.sh ($(date -u +%Y-%m-%dT%H:%M:%SZ)) ====="
 echo; echo "===== The CleanYourTV report (the same as Share log) ====="
 node $D/sharelog.js --print 2>&1

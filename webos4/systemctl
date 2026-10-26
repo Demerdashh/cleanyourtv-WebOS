@@ -1,0 +1,57 @@
+#!/bin/sh
+# systemctl shim for webOS 4 (Upstart) - CleanYourTV webOS 4 compatibility layer.
+# Translates only what CleanYourTV's scripts use: restart, start, stop, is-active, cat, list-units, --no-block.
+# Anything else fails loudly instead of guessing. Every call is logged to /tmp/cytv-systemctl.log.
+export PATH=/usr/bin:/usr/sbin:/bin:/sbin
+LOG=/tmp/cytv-systemctl.log
+NOWAIT=""; ARGS=""
+for a in "$@"; do
+  case "$a" in
+    --no-block) NOWAIT="-n" ;;
+    --no-legend|--quiet|-q) ;;
+    -*) echo "systemctl shim: unsupported option $a" >&2; exit 1 ;;
+    *) ARGS="$ARGS $a" ;;
+  esac
+done
+set -- $ARGS
+cmd=$1; [ $# -gt 0 ] && shift
+echo "$(cut -d' ' -f1 /proc/uptime) systemctl $cmd $*" >> $LOG 2>/dev/null
+
+# systemd unit name -> Upstart job name on webOS 4; prints nothing when this TV has no such job
+job() {
+  n=${1%.service}
+  case "$n" in
+    webapp-mgr) n=WebAppMgr ;;
+    preload-manager) n=webos-preload-manager ;;
+  esac
+  [ -f "/etc/init/$n.conf" ] && echo "$n"
+}
+running() { initctl status "$1" 2>/dev/null | grep -q "start/running"; }
+
+case "$cmd" in
+  list-units)
+    initctl list ;;
+  cat)
+    j=$(job "$1"); [ -n "$j" ] || { echo "No files found for $1." >&2; exit 1; }
+    cat "/etc/init/$j.conf" ;;
+  is-active)
+    j=$(job "$1")
+    if [ -n "$j" ] && running "$j"; then echo active; else echo inactive; exit 3; fi ;;
+  start|stop)
+    rc=0
+    for u in "$@"; do
+      j=$(job "$u"); [ -n "$j" ] || { echo "Unit $u not found." >&2; rc=5; continue; }
+      initctl "$cmd" $NOWAIT "$j" >/dev/null 2>&1 || rc=1
+    done
+    exit $rc ;;
+  restart)
+    rc=0
+    for u in "$@"; do
+      j=$(job "$u"); [ -n "$j" ] || { echo "Unit $u not found." >&2; rc=5; continue; }
+      if running "$j"; then initctl restart $NOWAIT "$j" >/dev/null 2>&1 || rc=1
+      else initctl start $NOWAIT "$j" >/dev/null 2>&1 || rc=1; fi
+    done
+    exit $rc ;;
+  *)
+    echo "systemctl shim: unsupported command '$cmd'" >&2; exit 1 ;;
+esac
