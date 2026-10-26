@@ -57,6 +57,15 @@ if [ "$method" = standin ]; then
     fg=$(luna-send -n 1 -w 5000 -f luna://com.webos.applicationManager/getForegroundAppInfo '{}' </dev/null | grep '"appId"')
     case "$fg" in
       *'"appId": ""'*|*com.webos.app.home*|"") luna-send -n 1 -w 10000 -f luna://com.webos.applicationManager/launch '{"id":"com.webos.app.home"}' </dev/null ;;
+      *)
+        # The TV started on another app or input (webOS 4.5 comes back to the last HDMI input, without Home): the launcher is
+        # checked the first time Home opens, which starts the stand-in, instead of now (webos4/README.md).
+        echo "$(up) home: the TV started on $(echo "$fg" | sed 's/.*"appId": *"\([^"]*\)".*/\1/'); the launcher is checked when Home first opens" >> $LOG
+        for i in $(seq 1 1200); do
+          grep -q " $EXE " /proc/mounts || exit 0
+          pgrep -f "^/bin/sh $EXE" >/dev/null && { echo "$(up) home: Home was opened" >> $LOG; break; }
+          sleep 3
+        done ;;
     esac
     # the launcher must be open in webapp-mgr by now; otherwise LG's Home comes back until the next reboot
     open=0

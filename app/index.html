@@ -2290,6 +2290,14 @@ function tile(a) {
     }
   };
   i.onerror = function () {
+    /* Chromium 53 (webOS 4) refuses icons asked for with crossOrigin (to read their colours): ask once more without it. The icon
+       is shown; iconColor finds the picture unreadable and takes a colour from the app id, which is not remembered. */
+    if (i.crossOrigin && !i._plain) {
+      i._plain = 1;
+      i.removeAttribute('crossorigin');
+      i.src = API + '/icon/' + encodeURIComponent(a.id) + '?plain=1';
+      return;
+    }
     i.remove();
     var t = document.createElement('div');
     t.className = 't';

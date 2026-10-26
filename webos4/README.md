@@ -15,6 +15,14 @@ On TVs without the folder (webOS 5 and newer) nothing changes: a missing folder 
 the plain `kill` the stand-in takeover sends, so the Home key kept showing LG's Home. When it survives, it is closed
 through sam (`closeByAppId`), then `kill -CONT` + `TERM`, then `KILL`. On other TVs the first kill works and this never runs.
 
+It also waits for Home: webOS 4.5 boots back to the last input (HDMI) without opening Home, so the check "the launcher is
+open in webapp-mgr" ran before anyone pressed Home and put LG's Home back. When the TV starts on another app, the check
+now waits until Home is first opened (the stand-in starts), for up to an hour.
+
+`app/src/js/tiles.js`: the launcher loads app icons with `crossOrigin` to read their colours; on Chromium 53 (webOS 4)
+every icon failed that way and the tiles showed only the app names. A failed icon is now asked for once more without
+`crossOrigin`: it is shown, and its tile colour comes from the app id.
+
 Other changes: `compat.json` lists 05.40.97 (55UM7095PVC, webOS 4.5, native Home -> the "standin" takeover), and
 `app/src/css/home.css` has a flexbox fallback for the app grid, because Chromium 53 (webOS 4) has no CSS grid.
 
