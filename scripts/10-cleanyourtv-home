@@ -35,6 +35,23 @@ if [ "$method" = standin ]; then
   echo "$EXE" > $STANDIN
   # LG's Home that runs now is its own program: stop it once, sam starts the stand-in for Home from now on
   for p in $(pgrep -f "^$EXE"); do kill "$p" 2>/dev/null; done
+  # webOS 4.5 preloads Home at boot and that copy outlives the kill above: close it through sam, then CONT + TERM, then KILL.
+  # Elsewhere the kill above was enough and nothing here runs (webos4/README.md).
+  sleep 2
+  if [ -n "$(pgrep -f "^$EXE")" ]; then
+    echo "$(up) home: LG's Home program survived the kill; closing it through sam" >> $LOG
+    luna-send -n 1 -w 8000 luna://com.webos.applicationManager/closeByAppId '{"id":"com.webos.app.home"}' </dev/null >/dev/null 2>&1
+    for t in 1 2 3 4 5 6; do
+      left=$(pgrep -f "^$EXE")
+      [ -z "$left" ] && break
+      for p in $left; do
+        kill -CONT "$p" 2>/dev/null
+        if [ $t -le 3 ]; then kill "$p" 2>/dev/null; else kill -9 "$p" 2>/dev/null; fi
+      done
+      sleep 2
+    done
+    [ -n "$(pgrep -f "^$EXE")" ] && echo "$(up) home: LG's Home program is still running" >> $LOG
+  fi
   (
     sleep 3
     fg=$(luna-send -n 1 -w 5000 -f luna://com.webos.applicationManager/getForegroundAppInfo '{}' </dev/null | grep '"appId"')

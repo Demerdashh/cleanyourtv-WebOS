@@ -11,6 +11,10 @@ of every script, so upstream's code runs unchanged:
 
 On TVs without the folder (webOS 5 and newer) nothing changes: a missing folder in `PATH` is skipped.
 
+`scripts/10-cleanyourtv-home`: webOS 4.5 preloads LG's native Home at boot ("preload":"full"), and that process outlives
+the plain `kill` the stand-in takeover sends, so the Home key kept showing LG's Home. When it survives, it is closed
+through sam (`closeByAppId`), then `kill -CONT` + `TERM`, then `KILL`. On other TVs the first kill works and this never runs.
+
 Other changes: `compat.json` lists 05.40.97 (55UM7095PVC, webOS 4.5, native Home -> the "standin" takeover), and
 `app/src/css/home.css` has a flexbox fallback for the app grid, because Chromium 53 (webOS 4) has no CSS grid.
 
