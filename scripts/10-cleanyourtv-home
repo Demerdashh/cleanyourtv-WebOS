@@ -61,11 +61,13 @@ if [ "$method" = standin ]; then
         # The TV started on another app or input (webOS 4.5 comes back to the last HDMI input, without Home): the launcher is
         # checked the first time Home opens, which starts the stand-in, instead of now (webos4/README.md).
         echo "$(up) home: the TV started on $(echo "$fg" | sed 's/.*"appId": *"\([^"]*\)".*/\1/'); the launcher is checked when Home first opens" >> $LOG
-        until pgrep -f "^/bin/sh $EXE" >/dev/null; do
+        # home-standin.sh leaves /tmp/cleanyourtv-home-asked when Home is asked for; the app manager's background preload does not count
+        rm -f /tmp/cleanyourtv-home-asked
+        until [ -f /tmp/cleanyourtv-home-asked ]; do
           grep -q " $EXE " /proc/mounts || exit 0   # the stand-in was removed meanwhile (undo-home.sh)
           sleep 3
         done
-        echo "$(up) home: the stand-in started (Home was opened, or the app manager preloaded it)" >> $LOG ;;
+        echo "$(up) home: Home was opened" >> $LOG ;;
     esac
     # the launcher must be open in webapp-mgr by now; otherwise LG's Home comes back until the next reboot
     open=0

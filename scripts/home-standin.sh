@@ -15,29 +15,23 @@ log() { echo "$(up) home-standin[$$]: $*" >> $LOG 2>/dev/null; }
 for p in $(pgrep -f "^/bin/sh $0"); do [ "$p" != $$ ] && kill "$p" 2>/dev/null; done
 pkill -f "[l]una-send -i -a com.webos.app.home" 2>/dev/null
 
-# The app manager also starts Home to preload it, in the background (webOS 4.5 does it about 15 s after the boot kills LG's Home).
-# Then the launcher is opened hidden ("preload":"full"), so it does not cover the input on screen. webapp-mgr does not bring a
-# launcher it opened hidden to the front, so the next time Home is shown it is closed first and opened again in front.
-HIDDEN=/tmp/cleanyourtv-home-hidden
+# The app manager also starts Home in the background to preload it (webOS 4.5 does it about 15 s after the boot kills LG's Home).
+# The launcher is not opened then: it would cover the input on screen, and webapp-mgr does not bring a launcher opened hidden to
+# the front. It opens on the first Home key (the relaunch event). Any other start or relaunch leaves $ASKED for 10-cleanyourtv-home,
+# which checks the launcher once Home has been asked for when the TV started on an input.
+ASKED=/tmp/cleanyourtv-home-asked
 
 show() {  # $1: start or relaunch, $2: the start argument
-  pre=""
-  case "$1 $2" in 'start '*'"reason":"preload"'* | 'start '*'"reason": "preload"'*) pre=1 ;; esac
-  if [ -z "$pre" ] && [ -f $HIDDEN ]; then
-    rm -f $HIDDEN
-    luna-send -n 1 -w 5000 luna://com.palm.webappmanager/killApp '{"appId":"com.webos.app.home"}' </dev/null >/dev/null 2>&1
-    log "closed the hidden launcher to open it in front"
-    sleep 2
-  fi
+  case "$1 $2" in
+    'start '*'"reason":"preload"'* | 'start '*'"reason": "preload"'*)
+      log "preloaded by the app manager: the launcher opens on the Home key"
+      return 0 ;;
+  esac
+  touch $ASKED
   for f in $L/wam-launch.json $L/wam-launch.json.str; do
     [ -f $f ] || continue
-    req=$(cat $f)
-    [ -n "$pre" ] && req="{\"preload\":\"full\",${req#\{}"
-    r=$(luna-send -n 1 -w 8000 luna://com.palm.webappmanager/launchApp "$req" </dev/null 2>&1 | tr -d '\n')
-    if echo "$r" | grep -q '"returnValue": *true'; then
-      if [ -n "$pre" ]; then touch $HIDDEN; log "launcher opened hidden (preload)"; else log "launcher shown ($1)"; fi
-      return 0
-    fi
+    r=$(luna-send -n 1 -w 8000 luna://com.palm.webappmanager/launchApp "$(cat $f)" </dev/null 2>&1 | tr -d '\n')
+    if echo "$r" | grep -q '"returnValue": *true'; then log "launcher shown ($1)"; return 0; fi
     log "webapp-mgr refused ${f##*/}: $(echo "$r" | cut -c1-200)"
   done
   return 1
