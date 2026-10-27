@@ -15,18 +15,36 @@ log() { echo "$(up) home-standin[$$]: $*" >> $LOG 2>/dev/null; }
 for p in $(pgrep -f "^/bin/sh $0"); do [ "$p" != $$ ] && kill "$p" 2>/dev/null; done
 pkill -f "[l]una-send -i -a com.webos.app.home" 2>/dev/null
 
-show() {
+# The app manager also starts Home to preload it, in the background (webOS 4.5 does it about 15 s after the boot kills LG's Home).
+# Then the launcher is opened hidden ("preload":"full"), so it does not cover the input on screen. webapp-mgr does not bring a
+# launcher it opened hidden to the front, so the next time Home is shown it is closed first and opened again in front.
+HIDDEN=/tmp/cleanyourtv-home-hidden
+
+show() {  # $1: start or relaunch, $2: the start argument
+  pre=""
+  case "$1 $2" in 'start '*'"reason":"preload"'* | 'start '*'"reason": "preload"'*) pre=1 ;; esac
+  if [ -z "$pre" ] && [ -f $HIDDEN ]; then
+    rm -f $HIDDEN
+    luna-send -n 1 -w 5000 luna://com.palm.webappmanager/killApp '{"appId":"com.webos.app.home"}' </dev/null >/dev/null 2>&1
+    log "closed the hidden launcher to open it in front"
+    sleep 2
+  fi
   for f in $L/wam-launch.json $L/wam-launch.json.str; do
     [ -f $f ] || continue
-    r=$(luna-send -n 1 -w 8000 luna://com.palm.webappmanager/launchApp "$(cat $f)" </dev/null 2>&1 | tr -d '\n')
-    if echo "$r" | grep -q '"returnValue": *true'; then log "launcher shown ($1)"; return 0; fi
+    req=$(cat $f)
+    [ -n "$pre" ] && req="{\"preload\":\"full\",${req#\{}"
+    r=$(luna-send -n 1 -w 8000 luna://com.palm.webappmanager/launchApp "$req" </dev/null 2>&1 | tr -d '\n')
+    if echo "$r" | grep -q '"returnValue": *true'; then
+      if [ -n "$pre" ]; then touch $HIDDEN; log "launcher opened hidden (preload)"; else log "launcher shown ($1)"; fi
+      return 0
+    fi
     log "webapp-mgr refused ${f##*/}: $(echo "$r" | cut -c1-200)"
   done
   return 1
 }
 
 log "started as uid $(id -u), arguments: $(echo "$*" | cut -c1-200)"
-show start
+show start "$*"
 
 # the registration: SAM's events arrive one JSON line each
 for m in registerApp registerNativeApp; do

@@ -65,7 +65,7 @@ if [ "$method" = standin ]; then
           grep -q " $EXE " /proc/mounts || exit 0   # the stand-in was removed meanwhile (undo-home.sh)
           sleep 3
         done
-        echo "$(up) home: Home was opened" >> $LOG ;;
+        echo "$(up) home: the stand-in started (Home was opened, or the app manager preloaded it)" >> $LOG ;;
     esac
     # the launcher must be open in webapp-mgr by now; otherwise LG's Home comes back until the next reboot
     open=0
