@@ -17,11 +17,11 @@ through sam (`closeByAppId`), then `kill -CONT` + `TERM`, then `KILL`. On other 
 
 It also waits for Home: webOS 4.5 boots back to the last input (HDMI) without opening Home, so the check "the launcher is
 open in webapp-mgr" ran before anyone pressed Home and put LG's Home back. When the TV starts on another app, the check
-now waits until Home is first opened (the stand-in starts), for up to an hour.
+now waits until Home is first opened (the stand-in starts), however long that takes (sent upstream as its own pull request).
 
-`app/src/js/tiles.js`: the launcher loads app icons with `crossOrigin` to read their colours; on Chromium 53 (webOS 4)
-every icon failed that way and the tiles showed only the app names. A failed icon is now asked for once more without
-`crossOrigin`: it is shown, and its tile colour comes from the app id.
+`helper/server.js`: Chromium 53 (webOS 4) sends `Origin: file://` with no app id, which the service refused (403), so the
+tiles showed only the app names. The service now accepts the bare `file://` too and answers `*` (sent upstream as its own
+pull request), so the icons and their colours come back.
 
 Other changes: `compat.json` lists 05.40.97 (55UM7095PVC, webOS 4.5, native Home -> the "standin" takeover), and
 `app/src/css/home.css` has a flexbox fallback for the app grid, because Chromium 53 (webOS 4) has no CSS grid.

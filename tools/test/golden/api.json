@@ -210,6 +210,14 @@
     "status": 200,
     "type": "application/json"
   },
+  "webOS 4 app origin": {
+    "body": {
+      "version": "<version>"
+    },
+    "cors": "*",
+    "status": 200,
+    "type": "application/json"
+  },
   "another app origin is refused": {
     "body": {
       "error": "origin not allowed"

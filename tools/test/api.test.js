@@ -175,6 +175,7 @@ const CALLS = [
   ['a web page is refused', 'GET', '/api/apps', undefined, 'http://evil.example'],
   ['preflight from our app', 'OPTIONS', '/api/apps', undefined, 'null'],
   ['webOS 6 app origin', 'GET', '/api/version', undefined, 'file://com.webos.app.home-webos'],
+  ['webOS 4 app origin', 'GET', '/api/version', undefined, 'file://'],
   ['another app origin is refused', 'GET', '/api/version', undefined, 'file://com.other.app-webos'],
   [
     'save the launcher settings',
