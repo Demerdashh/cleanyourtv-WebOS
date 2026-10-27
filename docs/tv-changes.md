@@ -32,8 +32,10 @@ uninstall. Optional features contact other services only when you switch them on
       the stock Home's `appinfo.json`, usually `/usr/bin/com.webos.app.home`) and LG's running Home is stopped once. LG's Home
       manifest stays in place and the app manager is not restarted: it starts the stand-in whenever Home is launched. The stand-in
       asks `webapp-mgr` to open the launcher directory as `com.webos.app.home` and tries to register with the app manager as Home,
-      so the Home key shows the open launcher again. If the launcher is not open in `webapp-mgr` within 30 seconds, the stand-in is
-      removed and LG's Home comes back until the next reboot. A file `/media/developer/cleanyourtv/home-method` holding `mount`
+      so the Home key shows the open launcher again. When the app manager starts Home in the background to preload it, the stand-in
+      opens nothing until the Home key. If the launcher is not open in `webapp-mgr` within 30 seconds, the stand-in is
+      removed and LG's Home comes back until the next reboot. When the TV starts on an input, those 30 seconds count from the
+      first time Home is opened. A file `/media/developer/cleanyourtv/home-method` holding `mount`
       makes such a TV use the first way.
 
    Whenever the app manager is restarted on a TV with LG's native Home or on webOS before 7 (the first way, or the setup registering

@@ -32,7 +32,19 @@ params() {  # $1: start or relaunch, $2: the start argument or the relaunch even
   echo "$p"
 }
 
+# The app manager also starts Home in the background to preload it (seen on webOS 4.5, about 15 s after the boot stops LG's Home).
+# The launcher is not opened then, since webapp-mgr would show it over what is on screen (an input the TV started on): it opens on
+# the first Home key (the relaunch event). Any other start or relaunch leaves $ASKED, which 10-cleanyourtv-home waits for when
+# the TV started on an input.
+ASKED=/tmp/cleanyourtv-home-asked
+
 show() {
+  case "$1 $2" in
+    'start '*'"reason":"preload"'* | 'start '*'"reason": "preload"'*)
+      log "preloaded by the app manager: the launcher opens on the Home key"
+      return 0 ;;
+  esac
+  touch $ASKED
   p=$(params "$1" "$2")
   k='"parameters":{}'
   for f in $L/wam-launch.json $L/wam-launch.json.str; do
